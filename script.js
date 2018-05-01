@@ -22,8 +22,8 @@ function get(name){
 function passlist()
 {
    var getshorturl=0;
-   var login = "o_3iokgmm945";
-   var api_key = "R_f2f3c9387a374e3fc6bf4b1ec2c945c4";
+   var login = "rachelu";
+   var api_key = "R_1633d4b10e81426c97c54cea189456c2";
    var long_url = "https://ungerlist.github.io/index.html?list="+ shoppinglist;
   try{
   $.getJSON(
@@ -61,7 +61,7 @@ function copyToClipboard(text) {
 }
 //v4.0 Add popup describing app when visitors load webpage the first time
 window.onload = function() {
-    alert("Welcome to 'Shopping List' App! This App will help you keep track of all the things you'll need on your next shopping trip!\n\nCreated by Rachel Unger\n**Javascript(Web233) Student**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    alert("Welcome to 'Music List' App! This App will help you keep track of all the new or old music you plan on adding to your music player!\n\nCreated by Rachel Unger\n**Javascript(Web233) Student**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
     populateshoppinglistonload();
     displayShoppinglists();
     clearFocus();
@@ -69,7 +69,7 @@ window.onload = function() {
 
 function about()
 {
-    alert("Welcome to 'Shopping List' App! This App will help you keep track of all the things you'll need on your next shopping trip!\n\nCreated by Rachel Unger\n**Javascript(Web233) Student**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    alert("Welcome to 'Music List' App! This App will help you keep track of all the new or old music you plan on adding to your music player!\n\nCreated by Rachel Unger\n**Javascript(Web233) Student**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
 
 }
 //read cookie and return
