@@ -1,17 +1,77 @@
-// Rachel Unger 
+// Rachel Unger
 // Spring 2018
 // Web233 Javascript
-// Week 12 Assignment - Shopping List Version 4.0
-
+// Week 13 Assignment - Shopping List
 
 //v 4.0 save / get array via cookies
-
 //v 4.0 read cookie on load and display
+
+//v4.1 get values via URL
+function get(name){
+    var url = window.location.search;
+    var num = url.search(name);
+    var namel = name.length;
+    var frontlength = namel+num+1; //length of everything before the value
+    var front = url.substring(0, frontlength);
+    url = url.replace(front, "");
+    num = url.search("&");
+    if(num>=0) return url.substr(0,num);
+    if(num<0)  return url;
+}
+//vFinal ShareList via bitly api
+function passlist()
+{
+   var getshorturl=0;
+   var login = "o_3iokgmm945";
+   var api_key = "R_f2f3c9387a374e3fc6bf4b1ec2c945c4";
+   var long_url = "https://rvclist.github.io/index.html?list="+ shoppinglist;
+  try{
+  $.getJSON(
+             "https://api-ssl.bitly.com/v3/shorten?callback=?",
+              {
+             "format": "json",
+              "apiKey": api_key,
+             "login": login,
+              "longUrl": long_url
+              },
+             function(response)
+             {
+                getshorturl = 1;
+                document.getElementById("sharelist").innerHTML = 'Share List:\n' + response.data.url;
+                copyToClipboard(response.data.url);
+                // copyToClipboard('sharelist');
+                 //alert("ShoppingList URL Copied");
+             });
+  } catch(err) {
+   //alert("Error : "+ err);
+    document.getElementById("sharelist").innerHTML = 'Share List:\n' + long_url;
+    //copyToClipboard("sharelist");
+    copyToClipboard(long_url);
+    //alert("ShoppingList URL Copied");
+}
+}
+//vFinal share function
+function share()
+{
+   passlist();
+}
+//v4.1 prompt message to copy URL
+function copyToClipboard(text) {
+   window.prompt("Copy & Share List!", text);
+}
+//v4.0 Add popup describing app when visitors load webpage the first time
 window.onload = function() {
-  populateshoppinglistonload();
-   displayShoppinglists();
+    alert("Welcome to 'Shopping List' App! This App will help you keep track of all the things you'll need on your next shopping trip!\n\nCreated by Rachel Unger\n**Javascript(Web233) Student**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    populateshoppinglistonload();
+    displayShoppinglists();
+    clearFocus();
 };
 
+function about()
+{
+    alert("Welcome to 'Shopping List' App! This App will help you keep track of all the things you'll need on your next shopping trip!\n\nCreated by Rachel Unger\n**Javascript(Web233) Student**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+
+}
 //read cookie and return
 function readCookie(name) {
     var nameEQ = name + "=";
@@ -25,17 +85,20 @@ function readCookie(name) {
 }
 
 //v. 4.0remove and format cookie
-function remove_unwanted(str) {  
-    
-  if ((str===null) || (str===''))  
-       return false;  
- else  
-   str = str.toString();  
-   str = str.replace(/%20/g, "");
-   str = str.replace(/%24/g, "$"); 
+function remove_unwanted(str) {
+
+  if ((str===null) || (str===''))
+       return false;
+ else
+   str = str.toString();
+    //clean space
+   str = str.replace(/%20/g, " ");
+    //clean !
+    str = str.replace(/%21/g, "!");
+   str = str.replace(/%24/g, "$");
    str = str.replace(/%7C/g, " | ");
-  return str.replace(/[^\x20-\x7E]/g, '');  
-}  
+  return str.replace(/[^\x20-\x7E]/g, '');
+}
 
 
 //v 4.0 save cookie
@@ -62,12 +125,19 @@ function populateshoppinglistonload()
   //load cookie into array
   var y = readCookie('ungerlist');
   //remove unwanted chars and format
-  y = remove_unwanted(y); 
+  y = remove_unwanted(y);
   //spit array by comma %2C
-  y = y.split('%2C');
-  if (y) {
-    shoppinglist = y;
-   }
+
+   //v 4.1 get URL
+  var geturllistvalue = get("list");
+    if (geturllistvalue) {
+        geturllistvalue = remove_unwanted(geturllistvalue);
+      geturllistvalue = geturllistvalue.split(',');
+      shoppinglist = geturllistvalue;
+  }else if (y){
+       y = y.split('%2C');
+      shoppinglist = y;
+  }
 }
 
 
@@ -115,15 +185,15 @@ function changeShoppingCart(position) {
    savecookie();
 }
 
-//v3.1 
+//v3.1
 function addbacktoshoppinglist(item,num) {
   //push to deleteShoppingCar
    deleteShoppingCart(num);
   shoppinglist.push(item);
   //display shoppinglist
   displayShoppinglists();
-//v3.1 display displayShoppingCart() 
-  displayShoppingCart(); 
+//v3.1 display displayShoppingCart()
+  displayShoppingCart();
   clearFocus();
   //v 4.0 save cookie
    savecookie();
@@ -131,12 +201,13 @@ function addbacktoshoppinglist(item,num) {
 
 //v 3.1 Update function addShoppinglist by adding objects
 function addtoshopcart(item, num) {
+    document.getElementById("sharelist").innerHTML = ' ';
     deleteShoppinglists(num);
     addtocart.push(item);
   //display shoppinglist
   displayShoppinglists();
-//v3.1 display displayShoppingCart() 
-  displayShoppingCart(); 
+//v3.1 display displayShoppingCart()
+  displayShoppingCart();
   //Clear
   clearFocus();
   //v 4.0 save cookie
@@ -144,49 +215,37 @@ function addtoshopcart(item, num) {
 }
 
 //v 3.1 Update function addShoppinglist by adding objects
-function addShoppinglist(item,cost) {
+function addShoppinglist(item) {
   //v 3.0 declare variable for groc string
-  var groc="";
-  //v 3.0 v 3.0 declare variable for loop count
-  var count=0;
-  //v 3.0 edit value for MyItems.name
-  MyItems.name=item;
-  //v 3.0 edit value for MyItems.cost
-  MyItems.price=cost;
-  //v 3.0 for loop through object propterties and 
-  for (var x in MyItems){
-    if (count===1){
-      groc += "$";
-    }
-    //add to groc string from object array item
-    groc += MyItems[x];
-    if (count===0){
-      groc += " | ";
-    }
-    //increment count by 1
-   count++;
-  }
   //push to shoppinglist
-  shoppinglist.push(groc);
+  if (item != "")
+    {
+    document.getElementById("sharelist").innerHTML = ' ';
+    shoppinglist.push(item);
   //display shoppinglist
   displayShoppinglists();
-//v3.1 display displayShoppingCart() 
-  displayShoppingCart(); 
+//v3.1 display displayShoppingCart()
+  displayShoppingCart();
   clearFocus();
   //v 4.0 save cookie
-  savecookie();
-}
+    savecookie();
+    }else
+    {
+    alert("Item Description Required: Please enter now :)");
+    clearFocus();
+    }
+  }
 
-function clearFocus()
-{
-  document.getElementById("item").value = "";
-   document.getElementById("cost").value = "";
-  document.getElementById("item").focus();
-}
+  function clearFocus()
+  {
+    document.getElementById("item").value = "";
+   //  document.getElementById("cost").value = "";
+    document.getElementById("item").focus();
+  }
 
-
-//v 3.1: update function displayShoppinglists() to add to cart 
+//v 3.1: update function displayShoppinglists() to add to cart
 function displayShoppinglists() {
+  document.getElementById("MyList").innerHTML = '';
 var TheList = "";
 var TheRow = "";
 var arrayLength = shoppinglist.length;
@@ -197,7 +256,8 @@ var btnupdate =  ' <input class="button" name="edit" type="button" value="Edit I
 //v 3.1 add edit button using below i index & name it btnpdate
 var arrays = shoppinglist[i];
 arrays = "'"+arrays+"'";
-var btnaddcart =  '<label><input name="add" type="checkbox" id="adds" value="Add to Shopping Cart" onclick="addtoshopcart('+arrays+','+ i +')" />Add</label>';
+var btnaddcart =  '<label><input name="add" type="checkbox" id="adds" value="Add to Shopping Cart" onclick="addtoshopcart('+arrays+','+ i +')" />';
+var btnsharelist = '<input class="button" id="shares" name="shares" type="submit" value="Share Shopping List" onclick="share()" />';
 TheRow = '<li>' + shoppinglist[i] + btndelete + ' '  + btnaddcart + '</li>';
 TheList += TheRow;
 }
@@ -205,9 +265,12 @@ TheList += TheRow;
 if (arrayLength > 0)
 {
   document.getElementById("MyList").innerHTML = '<ul>' + TheList + '</ul>';
+document.getElementById("sharebutton").innerHTML = btnsharelist;
 }else
 {
   document.getElementById("MyList").innerHTML = '';
+  document.getElementById("sharebutton").innerHTML = ' ';
+   document.getElementById("sharelist").innerHTML = ' ';
 }
 }
 
@@ -218,20 +281,22 @@ var TheRow = "";
 var arrayLength = addtocart.length;
 for (var i = 0; i < arrayLength; i++) {
   //v 3.1 change button name to btndelete
-var btndelete =  ' <input class="button" id="remove" name="delete" type="button" value="Remove Item" onclick="deleteShoppingCart(' + i + ')" />';
+var btndelete =  ' <input class="button" id="remove" name="delete" type="button" value="Remove" onclick="deleteShoppingCart(' + i + ')" />';
 //v 3.1 add edit button using below i index & name it btnpdate
 var btnupdate =  ' <input class="button" name="edit" type="button" value="Edit Item" onclick="changeShoppingCart(' + i + ')" />';
 var arrays = addtocart[i];
 arrays = "'"+arrays+"'";
 //v 3.1 add edit button using below i index & name it btnpdate
-var btnaddlist =  '<label><input name="add" type="checkbox" id="adds" value="Add to Shopping List" onclick="addbacktoshoppinglist('+arrays+',' + i + ')" checked="checked"/>Add</label>';
-TheRow =  "<li>" + addtocart[i] + btndelete + ' ' +  ' ' + btnaddlist + '<br></li>';
+var btnaddlist =  '<input name="add" type="checkbox" id="adds" value="Add to Shopping List" onclick="addbacktoshoppinglist('+arrays+',' + i + ')" checked="checked"/>';
+TheRow =  "<li>" + addtocart[i] + btndelete + ' ' +  ' ' + btnaddlist + '</li>';
 TheList += TheRow;
 }
 if (arrayLength > 0)
 {
-  document.getElementById("MyCart").innerHTML = 'Shopping Cart ' + '<br><ul>' + TheList + '</ul>';
+  document.getElementById("labels").innerHTML = 'Purchased';
+  document.getElementById("MyCart").innerHTML = '<ul>' + 'TheList' + '</ul>';
 }else{
+  document.getElementById("labels").innerHTML = '';
   document.getElementById("MyCart").innerHTML = '';
 }
 }
@@ -250,5 +315,3 @@ function deleteShoppingCart(position) {
   displayShoppinglists();
   displayShoppingCart();
 }
-
-
